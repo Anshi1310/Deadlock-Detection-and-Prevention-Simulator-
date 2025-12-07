@@ -30,6 +30,8 @@ Auto-generates input tables based on number of processes & resources
 
 Matrix validation and error handling
 
+
+
 🔹 UI & Visualization
 
 Modern, responsive UI with Bootstrap
@@ -37,6 +39,8 @@ Modern, responsive UI with Bootstrap
 Mermaid.js graphs for WFG
 
 Downloadable simulation output
+
+
 
 🧠 Algorithms Implemented
 
@@ -47,6 +51,8 @@ Deadlock Detection Algorithm
 Wait-For Graph analysis
 
 Need matrix calculation
+
+
 
 🛠️ Tech Stack
 Frontend (My Work)
@@ -67,6 +73,8 @@ Flask
 
 Jinja2 templates
 
+
+
 📂 Project Structure
 /static
     └── style.css      # UI styling
@@ -78,14 +86,17 @@ README.md
 LICENSE (MIT)
 .gitignore
 
+
 ▶️ How to Run the Project Locally
+
 1️⃣ Install dependencies
 pip install flask
+
 2️⃣ Run the Flask app
 python app.py
+
 3️⃣ Open in browser
 http://127.0.0.1:5000/
-🧾 Screenshots
 
 
 👩‍💻 My Contribution
@@ -93,6 +104,7 @@ http://127.0.0.1:5000/
 I designed and developed the entire frontend, including UI layout, styling, responsive design, matrix components, and integration with Flask templates.
 
 I also worked on the visualization (Mermaid WFG), error handling, and user interaction workflow.
+
 
 📄 License
 
