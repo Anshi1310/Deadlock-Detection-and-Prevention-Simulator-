@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deadlock Detection & Prevention Simulator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --danger-color: #f72585;
+            --warning-color: #f8961e;
+            --info-color: #4895ef;
+            --light-bg: #f8f9fa;
+            --dark-bg: #212529;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--light-bg); 
+            padding: 20px;
+            color: var(--dark-bg);
+        }
+
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background-color: white; 
+            padding: 30px; 
+            border-radius: 15px; 
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        }
+
+        .section { 
+            margin-bottom: 30px; 
+            padding: 25px; 
+            border-radius: 12px; 
+            background-color: #fff; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .highlight { 
+            background-color: #e3f2fd; 
+            border: 1px solid #90caf9; 
+            color: #1565c0; 
+            padding: 20px; 
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .error { 
+            background-color: #fce4ec; 
+            border: 1px solid #f8bbd0; 
+            color: #c2185b; 
+            padding: 20px; 
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .matrix-input { 
+            display: grid; 
+            gap: 12px; 
+            margin: 15px 0;
+        }
+
+        .matrix-input input { 
+            width: 100%; 
+            padding: 10px; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .matrix-input input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+        }
+
+        .step-visualization { 
+            margin-top: 25px; 
+            padding: 20px; 
+            background-color: var(--light-bg); 
+            border-radius: 8px;
+        }
+
+        .mermaid { 
+            margin: 25px 0; 
+            padding: 25px; 
+            background-color: white; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .form-label { 
+            font-weight: 600; 
+            margin-bottom: 10px;
+            color: var(--dark-bg);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary { 
+            background-color: var(--primary-color); 
+            border: none;
+        }
+
+        .btn-primary:hover { 
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            font-weight: 600;
+            padding: 15px 20px;
+            border-radius: 12px 12px 0 0 !important;
+        }
+
+        .table {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            padding: 12px;
+        }
+
+        .table td {
+            padding: 12px;
+            vertical-align: middle;
+        }
+
+        .form-control {
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+        }
+
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .safe-icon { color: #4caf50; }
+        .unsafe-icon { color: #f44336; }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            .section {
+                padding: 15px;
+            }
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading">
+        <div class="loading-spinner"></div>
+    </div>
+    <div class="container">
+        <h1 class="text-center mb-4">
+            <i class="fas fa-cogs me-2"></i>
+            Deadlock Detection & Prevention Simulator
+        </h1>
+        <form method="POST" id="deadlockForm" class="needs-validation" novalidate>
+            <div class="section">
+                <h3><i class="fas fa-sliders-h me-2"></i>Simulation Mode</h3>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="mode" id="detectMode" value="detect" required {% if form_data and form_data.get('mode') == 'detect' %}checked{% endif %}>
+                    <label class="form-check-label" for="detectMode">
+                        <i class="fas fa-search me-1"></i>Deadlock Detection
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="mode" id="preventMode" value="prevent" required {% if form_data and form_data.get('mode') == 'prevent' %}checked{% endif %}>
+                    <label class="form-check-label" for="preventMode">
+                        <i class="fas fa-shield-alt me-1"></i>Deadlock Prevention
+                    </label>
+                </div>
+            </div>
+            <div class="section">
+                <h3>System Configuration</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Number of Processes:</label>
+                            <input type="number" class="form-control" name="processes" min="1" required value="{{ form_data['processes'] if form_data else '' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Number of Resources:</label>
+                            <input type="number" class="form-control" name="resources" min="1" required value="{{ form_data['resources'] if form_data else '' }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Available Resources (space-separated):</label>
+                    <input type="text" class="form-control" name="available" pattern="^(\d+\s)*\d+$" required value="{{ form_data['available'] if form_data else '' }}">
+                    <div class="form-text">Enter space-separated numbers (e.g., "3 3 2")</div>
+                </div>
+            </div>
+            <div class="section">
+                <h3>Resource Matrices</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-primary text-white">Max Matrix (Maximum Demand)</div>
+                            <div class="card-body">
+                                <div id="max-matrix" class="matrix-input"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-success text-white">Allocation Matrix (Current Allocation)</div>
+                            <div class="card-body">
+                                <div id="allocation-matrix" class="matrix-input"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="section" id="request-section" style="display: none;">
+                <h3>Resource Request</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Requesting Process Index:</label>
+                            <input type="number" class="form-control" name="request_process" min="0" value="{{ form_data['request_process'] if form_data else '' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Request Vector (space-separated):</label>
+                            <input type="text" class="form-control" name="request" pattern="^(\d+\s)*\d+$" value="{{ form_data['request'] if form_data else '' }}">
+                            <div class="form-text">Enter space-separated numbers (e.g., "1 0 2")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-play me-2"></i>Run Simulation
+                </button>
+                <button type="reset" class="btn btn-secondary ms-2">
+                    <i class="fas fa-redo me-2"></i>Reset
+                </button>
+                {% if result %}
+                    <button id="downloadBtn" type="button" class="btn btn-success ms-2">
+                        <i class="fas fa-download me-2"></i>Download Result
+                    </button>
+                {% endif %}
+            </div>
+        </form>
+
+        {% if result %}
+        <div class="section">
+            <h3><i class="fas fa-chart-bar me-2"></i>Simulation Result</h3>
+            <div class="{{ 'highlight' if 'Safe' in result else 'error' }}">
+                <i class="fas {{ 'fa-check-circle safe-icon' if 'Safe' in result else 'fa-exclamation-circle unsafe-icon' }} result-icon"></i>
+                {{ result }}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if prevention_result %}
+        <div class="section">
+            <h3>Prevention Result</h3>
+            <div class="{{ 'highlight' if 'granted' in prevention_result else 'error' }}">
+                {{ prevention_result }}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if need %}
+        <div class="section">
+            <h3>Need Matrix</h3>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Process</th>
+                            {% for i in range(need[0]|length) %}
+                                <th>Resource {{ i }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in need %}
+                        <tr>
+                            <td>P{{ loop.index0 }}</td>
+                            {% for val in row %}
+                                <td>{{ val }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if safe_seq %}
+        <div class="section">
+            <h3>Safe Sequence</h3>
+            <div class="highlight">
+                {{ safe_seq | join(' → ') }}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if wfg %}
+        <div class="section">
+            <h3>Wait-For Graph</h3>
+            <div id="wfg-graph" class="mermaid">
+                graph TD
+                {% for key, val in wfg.items() %}
+                    {% for v in val %}
+                        {{ key }} --> {{ v }}
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if steps %}
+        <div class="section">
+            <h3>Step-by-Step Analysis</h3>
+            <div class="step-visualization">
+                {% for step in steps %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Step {{ loop.index }}: {{ step.label if step.label is defined else 'Action' }}</h5>
+                        <p class="card-text">
+                            <strong>Process:</strong> {{ step.process }}<br>
+                            {% if step.need is defined %}
+                                <strong>Need:</strong> {{ step.need | join(', ') }}<br>
+                            {% endif %}
+                            <strong>Work Vector:</strong> {{ step.work | join(', ') }}<br>
+                            {% if step.can_allocate is defined %}
+                                <strong>Can Allocate:</strong> {{ 'Yes' if step.can_allocate else 'No' }}<br>
+                            {% endif %}
+                            <strong>Action:</strong> {{ step.action }}
+                        </p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="section">
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <script id="max-matrix-json" type="application/json">
+        {{ form_data['max_matrix']|tojson|safe if form_data else '[]' }}
+    </script>
+    <script id="alloc-matrix-json" type="application/json">
+        {{ form_data['allocation']|tojson|safe if form_data else '[]' }}
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+        let maxMatrixData = [];
+        let allocMatrixData = [];
+        document.addEventListener('DOMContentLoaded', function() {
+            try { maxMatrixData = JSON.parse(document.getElementById('max-matrix-json').textContent.trim()); } catch { maxMatrixData = []; }
+            try { allocMatrixData = JSON.parse(document.getElementById('alloc-matrix-json').textContent.trim()); } catch { allocMatrixData = []; }
+            generateMatrixInputs();
+            // Force Mermaid to re-render
+            if (window.mermaid) {
+                var graphs = document.querySelectorAll('.mermaid');
+                graphs.forEach(function(g) {
+                    window.mermaid.init(undefined, g);
+                });
+            }
+        });
+        const processInput = document.querySelector("input[name='processes']");
+        const resourceInput = document.querySelector("input[name='resources']");
+        const modeRadios = document.querySelectorAll("input[name='mode']");
+        const form = document.getElementById('deadlockForm');
+        function generateMatrixInputs() {
+    const processes = parseInt(processInput.value);
+    const resources = parseInt(resourceInput.value);
+    if (isNaN(processes) || isNaN(resources) || processes < 1 || resources < 1) {
+        document.getElementById("max-matrix").innerHTML = '';
+        document.getElementById("allocation-matrix").innerHTML = '';
+        return;
+    }
+    let maxMatrixHTML = '<table class="table table-bordered"><thead><tr><th></th>';
+    for (let j = 0; j < resources; j++) {
+        maxMatrixHTML += `<th>R${j}</th>`;
+    }
+    maxMatrixHTML += '</tr></thead><tbody>';
+    for (let i = 0; i < processes; i++) {
+        maxMatrixHTML += `<tr><th>P${i}</th>`;
+        for (let j = 0; j < resources; j++) {
+            let val = (Array.isArray(maxMatrixData) && Array.isArray(maxMatrixData[i]) && maxMatrixData[i][j] !== undefined && maxMatrixData[i][j] !== null) ? maxMatrixData[i][j] : '';
+            maxMatrixHTML += `<td><input type='number' class='form-control' name='max_${i}_${j}' placeholder='0' required value='${val}'></td>`;
+        }
+        maxMatrixHTML += '</tr>';
+    }
+    maxMatrixHTML += '</tbody></table>';
+
+    let allocMatrixHTML = '<table class="table table-bordered"><thead><tr><th></th>';
+    for (let j = 0; j < resources; j++) {
+        allocMatrixHTML += `<th>R${j}</th>`;
+    }
+    allocMatrixHTML += '</tr></thead><tbody>';
+    for (let i = 0; i < processes; i++) {
+        allocMatrixHTML += `<tr><th>P${i}</th>`;
+        for (let j = 0; j < resources; j++) {
+            let val = (Array.isArray(allocMatrixData) && Array.isArray(allocMatrixData[i]) && allocMatrixData[i][j] !== undefined && allocMatrixData[i][j] !== null) ? allocMatrixData[i][j] : '';
+            allocMatrixHTML += `<td><input type='number' class='form-control' name='allocation_${i}_${j}' placeholder='0' required value='${val}'></td>`;
+        }
+        allocMatrixHTML += '</tr>';
+    }
+    allocMatrixHTML += '</tbody></table>';
+    document.getElementById("max-matrix").innerHTML = maxMatrixHTML;
+    document.getElementById("allocation-matrix").innerHTML = allocMatrixHTML;
+}
+
+        function toggleRequestSection() {
+            const selectedMode = Array.from(modeRadios).find(r => r.checked);
+            const requestSection = document.getElementById("request-section");
+            const requestInputs = requestSection.querySelectorAll("input");
+            requestSection.style.display = selectedMode && selectedMode.value === 'prevent' ? 'block' : 'none';
+            requestInputs.forEach(input => input.required = selectedMode && selectedMode.value === 'prevent');
+        }
+        function validateForm(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const downloadBtn = document.getElementById('downloadBtn');
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', function() {
+                    const resultDiv = document.querySelector('.highlight, .error');
+                    if (resultDiv) {
+                        const text = resultDiv.innerText;
+                        const blob = new Blob([text], {type: 'text/plain'});
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'simulation_result.txt';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    }
+                });
+            }
+        });
+        function toggleWFG() {
+            const wfg = document.getElementById('wfg-graph');
+            if (wfg.style.display === 'none') {
+                wfg.style.display = 'block';
+            } else {
+                wfg.style.display = 'none';
+            }
+        }
+        processInput.addEventListener('change', generateMatrixInputs);
+        resourceInput.addEventListener('change', generateMatrixInputs);
+        modeRadios.forEach(r => r.addEventListener('change', toggleRequestSection));
+        form.addEventListener('submit', validateForm);
+        document.getElementById('deadlockForm').addEventListener('submit', function() {
+            document.querySelector('.loading').style.display = 'flex';
+        });
+
+        // Add smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add matrix input validation
+        function validateMatrixInput(input) {
+            const value = parseInt(input.value);
+            if (isNaN(value) || value < 0) {
+                input.classList.add('is-invalid');
+                return false;
+            }
+            input.classList.remove('is-invalid');
+            return true;
+        }
+
+        // Add tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simulation Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #333;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        .safe {
+            color: green;
+        }
+        .unsafe {
+            color: red;
+        }
+        .section {
+            margin-top: 30px;
+        }
+        .highlight {
+            font-weight: bold;
+            background-color: #e8f5e9;
+            padding: 10px;
+            border-left: 5px solid green;
+        }
+        .warning {
+            font-weight: bold;
+            background-color: #ffebee;
+            padding: 10px;
+            border-left: 5px solid red;
+        }
+        .reason-box {
+            background-color: #fff3e0;
+            padding: 15px;
+            border-left: 5px solid #ff9800;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Deadlock Detection & Prevention Result</h1>
+
+    <h2 class="{{ 'safe' if 'safe' in result.lower() else 'unsafe' }}">{{ result }}</h2>
+
+    {% if mode == 'prevent' and safe_seq and safe_seq|length > 0 %}
+        <div class="section">
+            <h3>Safe Sequence:</h3>
+            <p class="highlight">{{ safe_seq | join(' → ') }}</p>
+        </div>
+    {% endif %}
+
+    <div class="section">
+        <h3>Need Matrix:</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Process</th>
+                    {% for i in range(need[0]|length) %}
+                        <th>R{{ i }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in range(need|length) %}
+                    <tr>
+                        <td>P{{ i }}</td>
+                        {% for val in need[i] %}
+                            <td>{{ val }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h3>Wait-For Graph (WFG):</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Process</th>
+                    <th>Waiting For</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for proc, waits in wfg.items() %}
+                    <tr>
+                        <td>{{ proc }}</td>
+                        <td>{{ ', '.join(waits) if waits else 'None' }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if mode == 'detect' %}
+    <div class="section">
+        <h3>Deadlock Analysis:</h3>
+        <p class="{{ 'warning' if deadlock else 'highlight' }}">{{ 'Yes' if deadlock else 'No' }}</p>
+        
+        {% if deadlock %}
+        <div class="reason-box">
+            <h4>Reason for Unsafe State:</h4>
+            <p>The system is in an unsafe state because the following processes are deadlocked:</p>
+            <ul>
+                {% for proc in deadlocked %}
+                <li>Process {{ proc }} cannot proceed because its resource needs cannot be satisfied with the currently available resources.</li>
+                {% endfor %}
+            </ul>
+            <p>This creates a circular wait condition where each process is waiting for resources held by another process in the deadlock set.</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if mode == 'prevent' and prevention_result %}
+        <div class="section">
+            <h3>Prevention Decision:</h3>
+            <p class="{{ 'highlight' if 'granted' in prevention_result.lower() else 'warning' }}">{{ prevention_result }}</p>
+        </div>
+    {% endif %}
+</body>
+</html>
