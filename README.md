@@ -74,17 +74,29 @@ Need matrix calculation
 - Jinja2
 
 
-
 ## 📂 Project Structure
-/static
-    └── style.css      # UI styling
-/templates
-    ├── index.html     # Main simulation page
-    └── result.html    # Result view
-app.py                 # Flask backend logic
-README.md
-LICENSE (MIT)
-.gitignore
+
+```text
+Deadlock-Detection-and-Prevention-Simulator/
+│
+├── static/
+│   └── style.css
+│
+├── templates/
+│   ├── index.html
+│   └── result.html
+│
+├── screenshots/
+│   ├── main-interface.png
+│   ├── simulation-result.png
+│   └── step-by-step.png
+│
+├── app.py
+├── README.md
+├── LICENSE
+└── .gitignore
+```
+
 
 ## 📸 Screenshots
 
