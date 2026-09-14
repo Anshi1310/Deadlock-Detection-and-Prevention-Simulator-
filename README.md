@@ -86,8 +86,25 @@ README.md
 LICENSE (MIT)
 .gitignore
 
+## 📸 Screenshots
 
-▶️ How to Run the Project Locally
+### Main Interface
+The simulator provides separate modes for deadlock detection and prevention, with dynamic process and resource matrix inputs.
+
+![Main Interface](screenshots/main-interface.png)
+
+### Simulation Result
+The simulator calculates the Need Matrix and determines the Safe Sequence for the given system state.
+
+![Simulation Result](screenshots/simulation-result.png)
+
+### Step-by-Step Analysis
+The simulator provides a step-by-step breakdown of the safety check, showing the Need Matrix, Work Vector, allocation decisions, and process completion.
+
+![Step-by-Step Analysis](screenshots/step-by-step.png)
+
+
+## ▶️ How to Run the Project Locally
 
 1️⃣ Install dependencies
 pip install flask
