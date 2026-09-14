@@ -1,10 +1,16 @@
-# Deadlock-Detection-and-Prevention-Simulator-
+# Deadlock Detection and Prevention Simulator
 📌 Deadlock Detection & Prevention Simulator
 
 An interactive web-based simulator built using HTML, CSS, JavaScript, and Flask (Python) to visualize deadlock detection, deadlock prevention, and Banker’s Algorithm.
 This project was developed as part of a PBL (Project-Based Learning) Team Project, and I contributed the entire frontend interface and UI design.
 
-🚀 Features
+## 🎯 Project Objective
+
+The objective of this project is to provide an interactive learning environment for understanding deadlock detection and prevention in Operating Systems.
+
+The simulator allows users to experiment with process and resource allocations and observe safety checks, safe sequences, deadlock states, and resource-request decisions.
+
+## 🚀 Features
 
 🔹 Deadlock Detection
 
@@ -31,7 +37,6 @@ Auto-generates input tables based on number of processes & resources
 Matrix validation and error handling
 
 
-
 🔹 UI & Visualization
 
 Modern, responsive UI with Bootstrap
@@ -42,7 +47,7 @@ Downloadable simulation output
 
 
 
-🧠 Algorithms Implemented
+## 🧠 Algorithms Implemented
 
 Banker’s Algorithm (Safety Check + Resource Allocation)
 
@@ -54,28 +59,23 @@ Need matrix calculation
 
 
 
-🛠️ Tech Stack
-Frontend (My Work)
+## 🛠️ Tech Stack
 
-HTML
+### Frontend
+- HTML5
+- CSS3
+- Bootstrap
+- JavaScript
+- Mermaid.js
 
-CSS (custom + Bootstrap)
-
-JavaScript
-
-Mermaid.js for graphs
-
-Backend
-
-Python
-
-Flask
-
-Jinja2 templates
+### Backend
+- Python
+- Flask
+- Jinja2
 
 
 
-📂 Project Structure
+## 📂 Project Structure
 /static
     └── style.css      # UI styling
 /templates
@@ -104,26 +104,40 @@ The simulator provides a step-by-step breakdown of the safety check, showing the
 ![Step-by-Step Analysis](screenshots/step-by-step.png)
 
 
+
 ## ▶️ How to Run the Project Locally
 
-1️⃣ Install dependencies
+### 1. Install dependencies
+
+```bash
 pip install flask
-
-2️⃣ Run the Flask app
+```
+### 2. Run the Flask app
+```bash
 python app.py
+```
+### 3. Open the application
 
-3️⃣ Open in browser
-http://127.0.0.1:5000/
+Open your browser and visit:
+```bash
+http://127.0.0.1:5050/
+```
+
+## 👩‍💻 My Contribution
+
+I designed and developed the complete frontend interface and UI/UX for the project.
+
+My contributions included:
+
+- Designed the overall UI layout and responsive interface
+- Developed dynamic process and resource matrix components
+- Implemented frontend validation and error handling
+- Integrated Flask/Jinja2 templates with the frontend
+- Implemented Mermaid.js-based Wait-For Graph visualization
+- Designed the simulation result and step-by-step analysis views
+- Developed the user interaction workflow
 
 
-
-👩‍💻 My Contribution
-
-I designed and developed the entire frontend, including UI layout, styling, responsive design, matrix components, and integration with Flask templates.
-
-I also worked on the visualization (Mermaid WFG), error handling, and user interaction workflow.
-
-
-📄 License
+## 📄 License
 
 This project is licensed under the MIT License.
